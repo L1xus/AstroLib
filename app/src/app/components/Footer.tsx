@@ -13,7 +13,7 @@ export default function Footer() {
       <div className='flex max-w-7xl mx-auto my-3'>
         <div className='flex'>
           <Image src="/fox.png" width={128} height={128} className='rounded-full'/>
-          <h1 className='text-xl font-semibold text-[#fe7e01] my-auto mx-2'>Astro_3262</h1>    
+          <h1 className='text-xl font-semibold text-[#fe7e01] my-auto mx-2'>Astro_3261</h1>    
         </div>
         <div className='flex my-auto ml-auto'>
           <div style={{ width: '30px', height: '30px', margin: 'auto 10px' }}>

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Header from "./components/Header.tsx"
 import Library from "./components/Library.tsx"
 import Footer from "./components/Footer.tsx"
