@@ -4,7 +4,7 @@ import Footer from '../components/Footer.tsx'
 
 export default function Swap() {
   return (
-    <main className="min-h-screen">
+    <main className="flex flex-col min-h-screen">
       <Header/>
       <SwapApp/>
       <Footer/>

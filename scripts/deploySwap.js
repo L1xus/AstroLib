@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 async function main() {
-  const poxAddress = "0xF425cABc522b0ED80FB9AeF32EA5F8090b1BF026" 
+  const poxAddress = "0x7bEea9EAb0610008605ce9ad3C10BD2608646AB8" 
 
   const swapContract = await hre.ethers.deployContract("PFSwap", [poxAddress]);
 

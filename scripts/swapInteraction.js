@@ -2,7 +2,7 @@ const { ethers } = require("hardhat")
 
 async function main() {
   const [deployer] = await ethers.getSigners()
-  const swapAddress = "0x1CA39c277115a763eE7db2e64C1DCdd109cE14Ae"
+  const swapAddress = "0xf8E6AEE797Cc258affCC06852088CA4898E2E566"
   const swapApp = await ethers.getContractAt("PFSwap", swapAddress, deployer)
 
   try {
@@ -16,7 +16,7 @@ async function main() {
   }
 
   // Define the POX token contract address
-  const poxAddress = "0xF425cABc522b0ED80FB9AeF32EA5F8090b1BF026"
+  const poxAddress = "0x7bEea9EAb0610008605ce9ad3C10BD2608646AB8"
   const poxContract = new ethers.Contract(poxAddress, ["function approve(address spender, uint256 amount) external returns (bool)"], deployer)
 
   // Define the amount of POX tokens to deposit
