@@ -4,12 +4,14 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { getAccount, publicClient, walletClient } from '../utils/config'
 import PFSwap from '../artifacts/contracts/PFSwap.sol/PFSwap'
-import { parseEther } from 'viem'
+import PFToken from '../artifacts/contracts/PFToken.sol/PFToken'
+import { parseEther, parseUnits } from 'viem'
 
 export default function SwapApp() {
   const [showETH, setShowETH] = useState(true)
   const [payInput, setPayInput] = useState('')
   const [receiveInput, setReceiveInput] = useState('')
+  const [swapProgress, setSwapProgress] = useState('')
 
   const getPayInput = (event) => {
     setPayInput(event.target.value)
@@ -24,18 +26,40 @@ export default function SwapApp() {
   }
 
   const submitSwap = async () => {
+    setSwapProgress('Approving')
+    
     const account = await getAccount()
-    console.log(account)
+
+    if(!showETH) {
+      const approvalAmount = parseUnits(payInput, 18)
+      const approvalRequest = await publicClient.simulateContract({
+        account,
+        address: '0x7bEea9EAb0610008605ce9ad3C10BD2608646AB8',
+        abi: PFToken.abi,
+        functionName: 'approve',
+        args: ['0xf8E6AEE797Cc258affCC06852088CA4898E2E566', approvalAmount]
+      })
+      const approvalHash = await walletClient.writeContract(approvalRequest.request)
+      await publicClient.waitForTransactionReceipt({hash: approvalHash}) 
+    }
+
+    setSwapProgress('Swapping')
+
+    const functionName = showETH ? 'swapETHtoPOX' : 'swapPOXtoETH'
+    const valueOrArgs = showETH ? { value: parseEther(payInput) } : { args: [parseUnits(payInput, 18)] }
+
     const { request } = await publicClient.simulateContract({
       account,
       address: '0xf8E6AEE797Cc258affCC06852088CA4898E2E566',
       abi: PFSwap.abi,
-      functionName: 'swapETHtoPOX',
-      value: parseEther(payInput)
+      functionName: functionName,
+      ...valueOrArgs
     })
-    await walletClient.writeContract(request)
-    console.log('Eth value sent', parseEther(payInput))
-    console.log(request)
+
+    const swapHash = await walletClient.writeContract(request)
+    await publicClient.waitForTransactionReceipt({hash: swapHash})
+
+    setSwapProgress('')
   }
 
   return (
@@ -91,7 +115,9 @@ export default function SwapApp() {
         </div>
         </div>
         <div className='mx-2 text-lg font-semibold text-[#f5f4f1] bg-[#fe7e01] rounded-lg hover:bg-[#f19132]'>
-          <button type='button' className='p-2 w-full' onClick={submitSwap}>Swap</button>
+          <button type='button' className='p-2 w-full' onClick={submitSwap}>
+            { swapProgress === 'Approving' ? 'Approving...' : swapProgress === 'Swapping' ? 'Swapping...' : 'Swap' }
+          </button>
         </div>
       </div>
     </div>
