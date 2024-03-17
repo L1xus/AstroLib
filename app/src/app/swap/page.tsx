@@ -9,5 +9,5 @@ export default function Swap() {
       <SwapApp/>
       <Footer/>
     </main>
-  );
+  )
 }

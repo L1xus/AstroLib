@@ -5,7 +5,7 @@ import { sepolia } from 'viem/chains'
  
 export const publicClient = createPublicClient({
   chain: sepolia,
-  transport: http()
+  transport: http(process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL)
 })
  
 let walletClient
@@ -25,4 +25,3 @@ export const getAccount = async () => {
   const [account] = await walletClient.getAddresses()
   return account
 }
-//export const [account] = await walletClient.getAddresses()

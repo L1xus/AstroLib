@@ -1,21 +1,68 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { getAccount, publicClient, walletClient } from '../utils/config'
 import PFSwap from '../artifacts/contracts/PFSwap.sol/PFSwap'
 import PFToken from '../artifacts/contracts/PFToken.sol/PFToken'
-import { parseEther, parseUnits } from 'viem'
+import { parseEther, parseUnits, formatEther, formatUnits } from 'viem'
 
 export default function SwapApp() {
   const [showETH, setShowETH] = useState(true)
   const [payInput, setPayInput] = useState('')
   const [receiveInput, setReceiveInput] = useState('')
   const [swapProgress, setSwapProgress] = useState('')
+  const [ethBalance, setEthBalance] = useState(0)
+  const [poxBalance, setPoxBalance] = useState(0)
+  const [walletEthBalance, setWalletEthBalance] = useState(0)
+  const [walletPoxBalance, setWalletPoxBalance] = useState(0)
+  
+  const swapAddress = '0xf8E6AEE797Cc258affCC06852088CA4898E2E566'
+  const poxAddress = '0x7bEea9EAb0610008605ce9ad3C10BD2608646AB8'
+
+  useEffect(() => {
+    async function fetchBalances() {
+      try {
+        const ethData = await publicClient.getBalance({
+          address: swapAddress
+        })
+        setEthBalance(formatEther(ethData.toString()))
+
+        const poxData = await publicClient.readContract({
+          address: poxAddress,
+          abi: PFToken.abi,
+          functionName: 'balanceOf',
+          args: [swapAddress]
+        })
+        setPoxBalance(formatUnits(poxData.toString(), 18))
+
+        const walletAddress = await getAccount()
+
+        const ethWalletData = await publicClient.getBalance({
+          address: walletAddress
+        })
+        setWalletEthBalance(parseFloat(formatEther(ethWalletData.toString())).toFixed(3))
+
+        const poxWalletData = await publicClient.readContract({
+          address: poxAddress,
+          abi: PFToken.abi,
+          functionName: 'balanceOf',
+          args: [walletAddress]
+        })
+        setWalletPoxBalance(parseFloat(formatUnits(poxWalletData.toString(), 18)).toFixed(3))
+      } catch (error) {
+        console.error('Error fetching balances', error)
+      }
+    }
+    fetchBalances()
+  })
 
   const getPayInput = (event) => {
-    setPayInput(event.target.value)
-  }
+    const inputValue = event.target.value
+    setPayInput(inputValue)
+    const calculatedReceiveInput = showETH ? inputValue * poxBalance / ethBalance : inputValue * ethBalance / poxBalance
+    setReceiveInput(calculatedReceiveInput)
+ }
 
   const getReceiveInput = (event) => {
     setReceiveInput(event.target.value)
@@ -26,40 +73,55 @@ export default function SwapApp() {
   }
 
   const submitSwap = async () => {
-    setSwapProgress('Approving')
+    try {
+      if (showETH && parseFloat(payInput) > parseFloat(ethBalance)) {
+        alert('Not enough ETH in the pool')
+        return
+      }
     
-    const account = await getAccount()
+      if (!showETH && parseFloat(payInput) > parseFloat(poxBalance)) {
+        alert('Not enough POX in the pool')
+        return
+      }
 
-    if(!showETH) {
-      const approvalAmount = parseUnits(payInput, 18)
-      const approvalRequest = await publicClient.simulateContract({
+      setSwapProgress('Approving')
+    
+      const account = await getAccount()
+
+      if(!showETH) {
+        const approvalAmount = parseUnits(payInput, 18)
+        const approvalRequest = await publicClient.simulateContract({
+          account,
+          address: poxAddress,
+          abi: PFToken.abi,
+          functionName: 'approve',
+          args: [swapAddress, approvalAmount]
+        })
+        const approvalHash = await walletClient.writeContract(approvalRequest.request)
+        await publicClient.waitForTransactionReceipt({hash: approvalHash}) 
+      }
+
+      setSwapProgress('Swapping')
+
+     const functionName = showETH ? 'swapETHtoPOX' : 'swapPOXtoETH'
+     const valueOrArgs = showETH ? { value: parseEther(payInput) } : { args: [parseUnits(payInput, 18)] }
+
+      const { request } = await publicClient.simulateContract({
         account,
-        address: '0x7bEea9EAb0610008605ce9ad3C10BD2608646AB8',
-        abi: PFToken.abi,
-        functionName: 'approve',
-        args: ['0xf8E6AEE797Cc258affCC06852088CA4898E2E566', approvalAmount]
+        address: swapAddress,
+        abi: PFSwap.abi,
+        functionName: functionName,
+        ...valueOrArgs
       })
-      const approvalHash = await walletClient.writeContract(approvalRequest.request)
-      await publicClient.waitForTransactionReceipt({hash: approvalHash}) 
+
+      const swapHash = await walletClient.writeContract(request)
+      await publicClient.waitForTransactionReceipt({hash: swapHash})
+
+      setSwapProgress('')
+    } catch (error) {
+      console.error('Error submitting swap:', error)
+      setSwapProgress('')
     }
-
-    setSwapProgress('Swapping')
-
-    const functionName = showETH ? 'swapETHtoPOX' : 'swapPOXtoETH'
-    const valueOrArgs = showETH ? { value: parseEther(payInput) } : { args: [parseUnits(payInput, 18)] }
-
-    const { request } = await publicClient.simulateContract({
-      account,
-      address: '0xf8E6AEE797Cc258affCC06852088CA4898E2E566',
-      abi: PFSwap.abi,
-      functionName: functionName,
-      ...valueOrArgs
-    })
-
-    const swapHash = await walletClient.writeContract(request)
-    await publicClient.waitForTransactionReceipt({hash: swapHash})
-
-    setSwapProgress('')
   }
 
   return (
@@ -84,6 +146,7 @@ export default function SwapApp() {
               <p className='text-[20px] text-[#f5f4f1] pl-1.5 font-semibold'>{showETH ? 'ETH' : 'POX'}</p>
             </div>
           </div>
+          <p className='text-sm'>balance: {showETH ? walletEthBalance : walletPoxBalance}</p>
         </div>
         
         <div className='absolute inset-1/3 flex justify-center items-center'>
@@ -112,6 +175,7 @@ export default function SwapApp() {
               <p className='text-[20px] text-[#f5f4f1] pl-1.5 font-semibold'>{showETH ? 'POX' : 'ETH'}</p>
             </div>
           </div>
+              <p className='text-sm'>balance: {showETH ? walletPoxBalance : walletEthBalance}</p>
         </div>
         </div>
         <div className='mx-2 text-lg font-semibold text-[#f5f4f1] bg-[#fe7e01] rounded-lg hover:bg-[#f19132]'>
