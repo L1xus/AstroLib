@@ -66,8 +66,12 @@ export default function BookInfo() {
               <td className="py-2">5,371</td>
             </tr>
             <tr>
-              <td className="pr-12 py-2">Listing</td>
-              <td className="py-2">234</td>
+              <td className="pr-12 py-2">Sell Royalties</td>
+              <td className="py-2">8%</td>
+            </tr>
+            <tr>
+              <td className="pr-12 py-2">Language</td>
+              <td className="py-2">English</td>
             </tr>
           </tbody>
         </table>
