@@ -11,7 +11,7 @@ export default function BookInfo() {
     pages: '',
     description: '',
     category: '',
-    language: '',
+    language: 'English',
     price: '',
     coverImage: null,
     book: null
@@ -48,12 +48,41 @@ export default function BookInfo() {
 
   const deployBook = (e) => {
     e.preventDefault()
-    console.log(formData)
+      const metadata = {
+        name: formData.bookTitle,
+        author: formData.authorName,
+        wallet: formData.wallet,
+        description: formData.description,
+        ipfsHash: '', // Placeholder for IPFS hash
+        image: '', // Placeholder for cover image IPFS URL
+        attributes: [
+          {
+            trait_type: 'Category',
+            value: formData.category
+          },
+          {
+            trait_type: 'Language',
+            value: formData.language
+          },
+          {
+            trait_type: 'Pages',
+            value: formData.pages
+          }
+        ]
+    }
+    console.log(metadata)
     setFormData({
       authorName: '',
       wallet: '',
-      bookTitle: ''
-    })
+      bookTitle: '',
+      pages: '',
+      description: '',
+      category: '',
+      language: 'English',
+      price: '',
+      coverImage: null,
+      book: null
+      })
   }
 
   return (
@@ -141,11 +170,11 @@ export default function BookInfo() {
 
           <div className='grid grid-cols-3 gap-4'>
             <div className='p-2'>
-              <label htmlFor='bookTitle' className='block text-[#1d1c1c]'>Category:</label>
+              <label htmlFor='category' className='block text-[#1d1c1c]'>Category:</label>
               <div className='items-center flex flex-row rounded bg-[#ebebeb] my-2'>
                 <input 
                   type='text' 
-                  name='bookTitle' 
+                  name='category' 
                   placeholder='Domaining, Crypto, Adsense...'
                   value={formData.category} 
                   onChange={handleChange} 
@@ -156,30 +185,30 @@ export default function BookInfo() {
             </div>
 
             <div className='p-2'>
-              <label htmlFor='pages' className='block text-[#1d1c1c]'>Language:</label>
+              <label htmlFor='language' className='block text-[#1d1c1c]'>Language:</label>
               <div className='items-center flex flex-row rounded bg-[#ebebeb] my-2'>
                 <select 
                   name='language' 
                   value={formData.language} 
                   onChange={handleChange} 
-                  required 
                   className='w-full px-3 py-2 cursor-pointer rounded outline-none focus:ring-1 focus:ring-[#00668c] hover:ring-1'
+                  required 
                 >
                   <option value='English'>English</option>
                   <option value='Arabic'>Arabic</option>
-                  <option value='Frensh'>Frensh</option>
+                  <option value='French'>French</option>
                 </select>
               </div>
             </div>
 
             <div className='p-2'>
-              <label htmlFor='pages' className='block text-[#1d1c1c]'>Price:</label>
+              <label htmlFor='price' className='block text-[#1d1c1c]'>Price:</label>
               <div className='items-center flex flex-row rounded bg-[#ebebeb] my-2'>
                 <input 
                   type='number' 
                   name='price' 
                   placeholder='Price in $POX'
-                  value={formData.pages} 
+                  value={formData.price} 
                   onChange={handleChange} 
                   className='h-9 w-full px-3 bg-inherit rounded outline-none focus:ring-1 focus:ring-[#00668c] hover:ring-1'
                   required 
