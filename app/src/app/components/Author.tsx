@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
+import { testAuthentication } from '../utils/pinata.tsx'
 
 export default function BookInfo() {
   const [formData, setFormData] = useState({
@@ -36,6 +37,17 @@ export default function BookInfo() {
       }))
     }
     reader.readAsDataURL(file)
+    
+    const pinata = async () => {
+      try {
+        const test = await testAuthentication()
+        console.log(test)
+      } catch (error) {
+        console.error('Error Authenticating!', error)
+        throw error
+      }
+    }
+    pinata()
   }
 
   const handleBook = (e) => {
