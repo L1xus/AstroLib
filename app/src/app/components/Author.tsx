@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
-import { testAuthentication } from '../utils/pinata.tsx'
+import { testAuthentication, pinFileToIPFS } from '../utils/pinata.tsx'
 
 export default function BookInfo() {
   const [formData, setFormData] = useState({
@@ -26,7 +26,7 @@ export default function BookInfo() {
       }))
   }
 
-  const handleCoverImage = (e) => {
+  const handleCoverImage = async (e) => {
     const file = e.target.files[0]
     const reader = new FileReader()
     reader.onload = () => {
@@ -38,16 +38,19 @@ export default function BookInfo() {
     }
     reader.readAsDataURL(file)
     
-    const pinata = async () => {
-      try {
-        const test = await testAuthentication()
-        console.log(test)
-      } catch (error) {
-        console.error('Error Authenticating!', error)
-        throw error
-      }
+    try {
+      const fileData = new FormData()
+      fileData.append('file', file, file.name)
+      const res = await fetch('/utils/pinata', {
+        method: 'POST',
+        body: fileData,
+      })
+      const ipfsHash = await res.text()
+      console.log(ipfsHash)
+    } catch (error) {
+      console.error('Error Authenticating!', error)
+      throw error
     }
-    pinata()
   }
 
   const handleBook = (e) => {
