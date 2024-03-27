@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
-import { testAuthentication, pinFileToIPFS } from '../utils/pinata.tsx'
+//import { testAuthentication, pinFileToIPFS } from '/api/pinata'
 
 export default function BookInfo() {
   const [formData, setFormData] = useState({
@@ -41,7 +41,7 @@ export default function BookInfo() {
     try {
       const fileData = new FormData()
       fileData.append('file', file, file.name)
-      const res = await fetch('/utils/pinata', {
+      const res = await fetch('/api/author', {
         method: 'POST',
         body: fileData,
       })
