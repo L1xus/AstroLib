@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import Image from 'next/image'
-//import { testAuthentication, pinFileToIPFS } from '/api/pinata'
 
 export default function BookInfo() {
   const [formData, setFormData] = useState({
@@ -18,8 +17,11 @@ export default function BookInfo() {
     book: null
   })
 
+  const [coverImageCid, setCoverImageCid] = useState('')
+  const inputCoverImage = useRef(null)
+
   const handleChange = (e) => {
-    const { name, value, files } = e.target
+    const { name, value } = e.target
       setFormData(prevState => ({
         ...prevState,
         [name]: value
@@ -39,16 +41,17 @@ export default function BookInfo() {
     reader.readAsDataURL(file)
     
     try {
-      const fileData = new FormData()
-      fileData.append('file', file, file.name)
+      const imgData = new FormData()
+      imgData.set('file', file)
       const res = await fetch('/api/author', {
         method: 'POST',
-        body: fileData,
+        body: imgData,
       })
       const ipfsHash = await res.text()
-      console.log(ipfsHash)
+      console.log('ifpsHash:',ipfsHash)
+      setCoverImageCid(ipfsHash)
     } catch (error) {
-      console.error('Error Authenticating!', error)
+      console.error('Error Pinning File!', error)
       throw error
     }
   }
@@ -248,6 +251,7 @@ export default function BookInfo() {
                 <input 
                   type='file' 
                   id='coverImage'
+                  ref={inputCoverImage}
                   name='coverImage' 
                   onChange={handleCoverImage} 
                   accept='image/*'
