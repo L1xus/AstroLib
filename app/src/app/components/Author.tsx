@@ -13,11 +13,13 @@ export default function BookInfo() {
     category: '',
     language: 'English',
     price: '',
+    ipfsHash: '',
+    image: '',
     coverImage: null,
     book: null
   })
-
-  const [coverImageCid, setCoverImageCid] = useState('')
+  const [coverUploading, setCoverUploading] = useState(false)
+  const [bookUploading, setBookUploading] = useState(false)
   const inputCoverImage = useRef(null)
 
   const handleChange = (e) => {
@@ -38,41 +40,72 @@ export default function BookInfo() {
         coverImagePreview: reader.result
       }))
     }
-    reader.readAsDataURL(file)
     
     try {
+      setCoverUploading(true)
       const imgData = new FormData()
       imgData.set('file', file)
       const res = await fetch('/api/author', {
         method: 'POST',
         body: imgData,
       })
-      const ipfsHash = await res.text()
-      console.log('ifpsHash:',ipfsHash)
-      setCoverImageCid(ipfsHash)
+      const jsonHash = await res.json()
+      const ipfsHash = jsonHash.IpfsHash
+      console.log('coverIfpsHash:',ipfsHash)
+
+      setFormData(prevState => ({
+        ...prevState,
+        image: ipfsHash
+      }))
+      setCoverUploading(false)
     } catch (error) {
       console.error('Error Pinning File!', error)
+      setCoverUploading(false)
       throw error
     }
   }
 
-  const handleBook = (e) => {
+  const handleBook = async (e) => {
     const file = e.target.files[0]
     setFormData(prevState => ({
       ...prevState,
       book: file
     }))
+
+    try {
+      setBookUploading(true)
+      const fileData = new FormData()
+      fileData.set('file', file)
+      const res = await fetch('/api/author', {
+        method: 'POST',
+        body: fileData,
+      })
+      const jsonHash = await res.json()
+      const ipfsHash = jsonHash.IpfsHash
+      console.log('bookIfpsHash:',ipfsHash)
+
+      setFormData(prevState => ({
+        ...prevState,
+        ipfsHash: `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${ipfsHash}`
+      }))
+      setBookUploading(false)
+    } catch (error) {
+      console.error('Error Pinning File!', error)
+      setBookUploading(false)
+      throw error
+    }
   }
 
   const deployBook = (e) => {
     e.preventDefault()
+    if ( formData.ipfsHash && formData.image ) {
       const metadata = {
         name: formData.bookTitle,
         author: formData.authorName,
         wallet: formData.wallet,
         description: formData.description,
-        ipfsHash: '', // Placeholder for IPFS hash
-        image: '', // Placeholder for cover image IPFS URL
+        ipfsHash: formData.ipfsHash,
+        image: formData.image,
         attributes: [
           {
             trait_type: 'Category',
@@ -87,20 +120,21 @@ export default function BookInfo() {
             value: formData.pages
           }
         ]
-    }
-    console.log(metadata)
-    setFormData({
-      authorName: '',
-      wallet: '',
-      bookTitle: '',
-      pages: '',
-      description: '',
-      category: '',
-      language: 'English',
-      price: '',
-      coverImage: null,
-      book: null
+      }
+      console.log(metadata)
+      setFormData({
+        authorName: '',
+        wallet: '',
+        bookTitle: '',
+        pages: '',
+        description: '',
+        category: '',
+        language: 'English',
+        price: '',
+        coverImage: null,
+        book: null
       })
+    }
   }
 
   return (
@@ -240,10 +274,16 @@ export default function BookInfo() {
               <label htmlFor='coverImg' className='block text-[#1d1c1c]'>Cover Image:</label>
               <div className='flex justify-center'>
                 <label htmlFor='coverImage' className='h-80 w-[250px] my-2 flex items-center justify-center bg-[#ebebeb] cursor-pointer rounded outline-none focus:ring-1 focus:ring-[#00668c] hover:ring-1'>
-                  {formData.coverImagePreview ? (
-                    <Image src={formData.coverImagePreview} width={250} height={320} />
+                  {coverUploading ? (
+                    <p>Cover Image Uploading...</p>
                   ) : (
-                    <Image src="/plus.png" width={20} height={20} />
+                    <>
+                      {formData.coverImagePreview ? (
+                        <Image src={formData.coverImagePreview} width={250} height={320} />
+                      ) : (
+                        <Image src="/plus.png" width={20} height={20} />
+                      )}
+                    </>
                   )}
                 </label>
               </div>
@@ -264,14 +304,20 @@ export default function BookInfo() {
             <div className='p-2'>
               <label htmlFor='bookLabel' className='block text-[#1d1c1c]'>Book:</label>
               <label htmlFor='book' className='h-32 my-2 flex items-center justify-center bg-[#ebebeb] cursor-pointer rounded outline-none focus:ring-1 focus:ring-[#00668c] hover:ring-1'>
-                {formData.book ? (
-                  <span className='flex'>
-                    <Image src="/book.png" width={20} height={20} />
-                    {formData.book.name}
-                  </span>
-                ) : (
-                  <Image src="/plus.png" width={20} height={20} />
-                )}
+                  {bookUploading ? (
+                    <p>Book Uploading...</p>
+                  ) : (
+                    <>
+                      {formData.book ? (
+                        <span className='flex'>
+                          <Image src="/book.png" width={20} height={20} />
+                          {formData.book.name}
+                        </span>
+                      ) : (
+                        <Image src="/plus.png" width={20} height={20} />
+                      )}
+                    </>
+                  )}
               </label>
               <div className='items-center flex flex-row rounded bg-[#ebebeb] my-2'>
                 <input 
