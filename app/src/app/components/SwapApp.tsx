@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { getAccount, publicClient, walletClient } from '../utils/config'
-import PFSwap from '../artifacts/contracts/PFSwap.sol/PFSwap'
-import PFToken from '../artifacts/contracts/PFToken.sol/PFToken'
+import { getAccount, publicClient, walletClient } from '/utils/config'
+import PFSwap from '/artifacts/contracts/PFSwap.sol/PFSwap'
+import PFToken from '/artifacts/contracts/PFToken.sol/PFToken'
 import { parseEther, parseUnits, formatEther, formatUnits } from 'viem'
 
 export default function SwapApp() {

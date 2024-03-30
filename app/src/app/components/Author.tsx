@@ -40,6 +40,7 @@ export default function BookInfo() {
         coverImagePreview: reader.result
       }))
     }
+    reader.readAsDataURL(file)
     
     try {
       setCoverUploading(true)
@@ -96,7 +97,7 @@ export default function BookInfo() {
     }
   }
 
-  const deployBook = (e) => {
+  const deployBook = async (e) => {
     e.preventDefault()
     if ( formData.ipfsHash && formData.image ) {
       const metadata = {
@@ -122,6 +123,26 @@ export default function BookInfo() {
         ]
       }
       console.log(metadata)
+      const metadataString = JSON.stringify(metadata)
+      console.log(metadataString)
+
+      try {
+        const metadataFormData = new FormData()
+        metadataFormData.append('file', new Blob([metadataString], { type: 'application/json' }))
+        console.log(metadataFormData)
+
+        const metadataRes = await fetch('/api/deploy', {
+          method: 'POST',
+          body: metadataFormData,
+        })
+        const metadataJsonHash = await metadataRes.json();
+        const metadataIpfsHash = metadataJsonHash.IpfsHash;
+
+        console.log('metadataIpfsHash:', metadataIpfsHash);
+      } catch (error) {
+        console.error('Error uploading metadata to IPFS:', error);
+      }
+
       setFormData({
         authorName: '',
         wallet: '',
