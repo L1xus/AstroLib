@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react'
 import Image from 'next/image'
+import { deployBook } from '../utils/deployBook'
 
 export default function BookInfo() {
   const [formData, setFormData] = useState({
@@ -18,9 +19,11 @@ export default function BookInfo() {
     coverImage: null,
     book: null
   })
+  const [metadataHash, setMetadataHash] = useState('')
   const [coverUploading, setCoverUploading] = useState(false)
   const [bookUploading, setBookUploading] = useState(false)
   const inputCoverImage = useRef(null)
+  let addBook 
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -97,7 +100,7 @@ export default function BookInfo() {
     }
   }
 
-  const deployBook = async (e) => {
+  const handleDeployBook = async (e) => {
     e.preventDefault()
     if ( formData.ipfsHash && formData.image ) {
       const metadata = {
@@ -138,30 +141,24 @@ export default function BookInfo() {
         const metadataJsonHash = await metadataRes.json();
         const metadataIpfsHash = metadataJsonHash.IpfsHash;
 
+        setMetadataHash(metadataIpfsHash)
+
         console.log('metadataIpfsHash:', metadataIpfsHash);
       } catch (error) {
         console.error('Error uploading metadata to IPFS:', error);
       }
 
-      setFormData({
-        authorName: '',
-        wallet: '',
-        bookTitle: '',
-        pages: '',
-        description: '',
-        category: '',
-        language: 'English',
-        price: '',
-        coverImage: null,
-        book: null
-      })
+     //add book here! 
+      addBook = await deployBook(formData.wallet, metadataHash)
+      console.log('book added? ', addBook)
+
     }
   }
 
   return (
     <div className='max-w-7xl mx-auto my-3 p-6 bg-[#f5f4f1] rounded-lg	'>
       <div className='bg-[#b6ccd8] shadow-xl p-6 rounded'>
-        <form onSubmit={deployBook}>
+        <form onSubmit={handleDeployBook}>
           <h1 className='text-2xl font-semibold text-[#00668c] pl-1 uppercase'>Informations</h1>
           <div className='grid grid-cols-2 gap-4'>
             <div className='p-2'>

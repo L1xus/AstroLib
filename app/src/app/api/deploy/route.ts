@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: metadata.name }),
+        body: JSON.stringify(metadata),
       })
       const { IpfsHash } = await res.json()
       console.log(IpfsHash)
