@@ -2,14 +2,17 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function Footer() {
 
   return (
     <footer className='bg-[#00668c] py-4 mt-auto rounded-t-[30px]'>
-      <div className='container mx-auto text-center'>
-        <p className='text-lg font-semibold text-[#fffefb] underline'>Swap $POX</p>
-      </div>
+      <Link href='/swap'>
+        <div className='container mx-auto text-center'>
+          <p className='text-lg font-semibold text-[#fffefb] underline'>Swap $POX</p>
+        </div>
+      </Link>
       <div className='flex max-w-7xl mx-auto my-3'>
         <div className='flex'>
           <Image src="/fox.png" width={128} height={128} className='rounded-full'/>
@@ -17,10 +20,18 @@ export default function Footer() {
         </div>
         <div className='flex my-auto ml-auto'>
           <div style={{ width: '30px', height: '30px', margin: 'auto 10px' }}>
-            <Image src='/x.svg' width={30} height={30} />
+            <Link href='https://twitter.com/Astro_3261' legacyBehavior>
+              <a target="_blank" rel="noopener noreferrer">
+                <Image src='/x.svg' width={30} height={30} />
+              </a>
+            </Link>
           </div>
-           <div style={{ width: '40px', height: '40px' }}>
-            <Image src='/github.svg' width={40} height={40} />
+          <div style={{ width: '40px', height: '40px' }}>
+            <Link href='https://github.com/L1xus' legacyBehavior>
+              <a target="_blank" rel="noopener noreferrer">
+                <Image src='/github.svg' width={40} height={40} />
+              </a>
+            </Link>
           </div>
         </div>
      </div>

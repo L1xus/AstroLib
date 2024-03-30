@@ -12,7 +12,7 @@ export default function Library() {
       </div>
       <div className='mt-3'>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'>
-          {[...Array(4)].map((_, idx) => (
+          {[...Array(1)].map((_, idx) => (
             <div key={idx} className='flex bg-[#b6ccd8] shadow-xl h-48 p-3 rounded'>
               <div className='w-auto h-full'>
                 <img src="/test.jpg" alt="" className="h-full object-cover rounded" loading="lazy" />
