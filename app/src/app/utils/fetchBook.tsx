@@ -18,7 +18,7 @@ const fetchBookMetadat = async (tokenUri) => {
 export const fetchBook = async () => {
   try {
     const account = await getAccount()
-    const libraryAddress= "0xca0D7896EA09bc72cA491E4c0DC3f1d7eebEaBA3"
+    const libraryAddress= "0x5a99dEFD8e0F1cD7fa20c318B93617De61F0A413"
     const books = []
     const booksMetadata = []
 
@@ -45,7 +45,7 @@ export const fetchBook = async () => {
       }
     }
 
-    return booksMetadata
+    return { books, booksMetadata }
   } catch (error) {
     console.error('shit adding book!', error)
     throw error

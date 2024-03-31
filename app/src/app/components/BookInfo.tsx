@@ -1,9 +1,23 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { fetchBook } from '../utils/fetchBook'
 
 export default function BookInfo() {
+  const [book, setBook] = useState([])
+  const [bookMetadata, setBookMetadata] = useState([])
+
+  useEffect(() => {
+    const loadBooks = async () => {
+      const { books, booksMetadata } = await fetchBook()
+      setBook(books)
+      setBookMetadata(booksMetadata)
+    }
+
+    loadBooks()
+  }, [])
+
   return (
     <div className='max-w-7xl mx-auto my-3 p-6 bg-[#f5f4f1] rounded-lg	'>
       <div className='md:flex bg-[#b6ccd8] shadow-xl p-6 rounded'>
@@ -15,13 +29,13 @@ export default function BookInfo() {
             <div style={{ width: '16px', height: '16px' }}>
               <Image src='/book.png' width={16} height={16} />
             </div>
-            <h1 className='text-2xl font-semibold text-[#00668c] pl-1 uppercase'>Book Title N1</h1>
+            <h1 className='text-2xl font-semibold text-[#00668c] pl-1 uppercase'>
+              {bookMetadata[0] && bookMetadata[0].name ? bookMetadata[0].name : 'S3aid olbri9'}
+            </h1>
           </div>
           <div className='flex my-3'>
             <p>
-              "Lost Note" is a short story about fighting depression and anxiety and the creation of the poem "Lost".
-              <br/>
-              "Exquisite, truthful, brutal" literary artwork by xVALORIAN.
+              {bookMetadata[0] && bookMetadata[0].description ? bookMetadata[0].description : ''}
             </p>  
           </div>
           <table>
