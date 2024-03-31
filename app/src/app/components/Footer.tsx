@@ -8,11 +8,11 @@ export default function Footer() {
 
   return (
     <footer className='bg-[#00668c] py-4 mt-auto rounded-t-[30px]'>
-      <Link href='/swap'>
-        <div className='container mx-auto text-center'>
-          <p className='text-lg font-semibold text-[#fffefb] underline'>Swap $POX</p>
-        </div>
-      </Link>
+      <div className='container mx-auto text-center'>
+        <p className='text-lg font-semibold text-[#fffefb] underline'>
+          <Link href='/swap'>Swap $POX</Link>
+        </p>
+      </div>
       <div className='flex max-w-7xl mx-auto my-3'>
         <div className='flex'>
           <Image src="/fox.png" width={128} height={128} className='rounded-full'/>

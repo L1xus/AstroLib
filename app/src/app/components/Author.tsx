@@ -129,6 +129,8 @@ export default function BookInfo() {
       const metadataString = JSON.stringify(metadata)
       console.log(metadataString)
 
+      let metadataHash
+
       try {
         const metadataFormData = new FormData()
         metadataFormData.append('file', new Blob([metadataString], { type: 'application/json' }))
@@ -141,16 +143,16 @@ export default function BookInfo() {
         const metadataJsonHash = await metadataRes.json();
         const metadataIpfsHash = metadataJsonHash.IpfsHash;
 
-        setMetadataHash(metadataIpfsHash)
+        metadataHash = metadataIpfsHash
 
         console.log('metadataIpfsHash:', metadataIpfsHash);
       } catch (error) {
         console.error('Error uploading metadata to IPFS:', error);
       }
 
-     //add book here! 
+      console.log('metadataHash: ', metadataHash)
       addBook = await deployBook(formData.wallet, metadataHash)
-      console.log('book added? ', addBook)
+      console.log('book added! ', addBook)
 
     }
   }
