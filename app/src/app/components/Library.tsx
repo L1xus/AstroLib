@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { fetchBook } from '../utils/fetchBook'
 
 export default function Library() {
@@ -18,6 +19,7 @@ export default function Library() {
     loadBooks()
   }, [])
 
+
   return (
     <div className='max-w-7xl mx-auto my-3 p-6 bg-[#f5f4f1] rounded-lg'>
       <div className='flex'>
@@ -29,14 +31,18 @@ export default function Library() {
           {booksMetadata.map((book, idx) => (
             <div key={idx} className='flex bg-[#b6ccd8] shadow-xl h-48 p-3 rounded'>
               <div className='w-auto h-full'>
-                <img src="/test.jpg" alt="" className="h-full object-cover rounded" loading="lazy" />
+                <img src={
+                  `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${booksMetadata[idx] && booksMetadata[idx].image ? booksMetadata[idx].image : ''}`}
+                  alt="" className="h-full object-cover rounded" loading="lazy" />
               </div>
               <div className='flex-grow my-auto px-5'>
                 <div className='flex items-center'>
                   <div style={{ width: '16px', height: '16px' }}>
                     <Image src='/book.png' width={16} height={16} />
                   </div>
-                  <h1 className='text-lg font-semibold text-[#00668c] pl-1 uppercase'>{book.name}</h1>
+                  <Link href={`/books/${book.name}?idx=${idx}`}>
+                    <h1 className='text-lg font-semibold text-[#00668c] pl-1 uppercase'>{book.name}</h1>
+                 </Link>
                 </div>
                 <div className='flex my-3'>
                   <h1 className='text-base font-medium text-[#313d44] mr-auto'>{book.author}</h1>

@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { fetchBook } from '../utils/fetchBook'
 
-export default function BookInfo() {
+export default function BookInfo({ index }) {
   const [book, setBook] = useState([])
   const [bookMetadata, setBookMetadata] = useState([])
+
+  console.log('index: ', index)
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -18,11 +20,15 @@ export default function BookInfo() {
     loadBooks()
   }, [])
 
+  const coverCid = bookMetadata[0] && bookMetadata[0].image ? bookMetadata[0].image : ''
+  console.log(coverCid)
+  const coverImage = `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${coverCid}`
+
   return (
     <div className='max-w-7xl mx-auto my-3 p-6 bg-[#f5f4f1] rounded-lg	'>
       <div className='md:flex bg-[#b6ccd8] shadow-xl p-6 rounded'>
         <div className='w-auto h-full'>
-          <img src="/test.jpg" alt="" className="h-full object-cover rounded" loading="lazy" />
+          <img src={coverImage} alt="" width={280} height={380} className="object-cover rounded" loading="lazy" />
         </div>
         <div className='flex-grow my-auto px-5'>
           <div className='flex items-center'>
@@ -41,25 +47,30 @@ export default function BookInfo() {
           <table>
             <tbody>
               <tr>
-                <td className="pr-12 py-2">Maximum Supply</td>
-                <td className="pr-12 py-2">10,000</td>
+                <td className="pr-12 py-2">Minted Books</td>
+                <td className="pr-12 py-2">
+                  {book[0] && book[0][3] ? book[0][3].toString() : ''}
+                </td>
               </tr>
               <tr>
-                <td className="pr-12 py-2">Total Owners</td>
-                <td className="pr-12 py-2">9,234</td>
+                <td className="pr-12 py-2">Price</td>
               </tr>
               <tr>
-                <td className="pr-12 py-2">Total Transactions</td>
-                <td className="pr-12 py-2">5,371</td>
-              </tr>
-              <tr>
-                <td className="pr-12 py-2">Listing</td>
-                <td className="pr-12 py-2">234</td>
+                <td className="pr-12 py-2">
+                  <div className='flex'>
+                    <div style={{ width: '28px', height: '28px' }} className='rounded-full'>
+                      <Image src='/pox.png' width={28} height={28} />
+                    </div>
+                    <p className='text-lg font-semibold text-[#00668c] ml-2'>
+                      {book[0] && book[0][2] ? (BigInt(book[0][2]) / 10n**18n).toString() : '----'}
+                    </p> 
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
           <div className='my-3 mx-auto'>
-            <button className='px-12 py-2 rounded text-[#00668c] font-semibold border-2 border-[#00668c]'>Buy Page</button>
+            <button className='px-12 py-2 rounded text-[#00668c] font-semibold border-2 border-[#00668c]'>Mint Book</button>
           </div>
         </div>
       </div>
@@ -72,20 +83,53 @@ export default function BookInfo() {
               <td className="py-2">490eb813-9...19a34f68f8</td>
             </tr>
             <tr>
-              <td className="pr-12 py-2">Contract Address</td>
-              <td className="py-2">0xeBd65E2c...1Dec9fa3D5</td>
-            </tr>
-            <tr>
               <td className="pr-12 py-2">Publication Date</td>
-              <td className="py-2">5,371</td>
+              <td className="py-2">5/03/2024</td>
             </tr>
             <tr>
-              <td className="pr-12 py-2">Sell Royalties</td>
-              <td className="py-2">8%</td>
+              <td className="pr-12 py-2">Category</td>
+              <td className="py-2">
+                {bookMetadata[0] && bookMetadata[0].attributes ? 
+                  bookMetadata[0].attributes.map((attribute, index) => {
+                    if (attribute.trait_type === "Category") {
+                      return (
+                        <p key={index}>{attribute.value}</p>
+                      );
+                    }
+                    return null
+                  })
+                : ''}
+              </td>
             </tr>
             <tr>
               <td className="pr-12 py-2">Language</td>
-              <td className="py-2">English</td>
+              <td className="py-2">
+                {bookMetadata[0] && bookMetadata[0].attributes ? 
+                  bookMetadata[0].attributes.map((attribute, index) => {
+                    if (attribute.trait_type === "Language") {
+                      return (
+                        <p key={index}>{attribute.value}</p>
+                      );
+                    }
+                    return null
+                  })
+                : ''}
+              </td>
+            </tr>
+            <tr>
+              <td className="pr-12 py-2">Pages</td>
+              <td className="py-2">
+                {bookMetadata[0] && bookMetadata[0].attributes ? 
+                  bookMetadata[0].attributes.map((attribute, index) => {
+                    if (attribute.trait_type === "Pages") {
+                      return (
+                        <p key={index}>{attribute.value}</p>
+                      );
+                    }
+                    return null
+                  })
+                : ''}
+              </td>
             </tr>
           </tbody>
         </table>
