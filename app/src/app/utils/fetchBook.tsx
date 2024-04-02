@@ -38,6 +38,7 @@ export const fetchBook = async () => {
         args: [i]
       })
       books.push(book)
+      console.log('boooooooook',book.length)
 
       const metadataJson = await fetchBookMetadat(book[1])
       if (metadataJson) {

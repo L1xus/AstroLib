@@ -2,13 +2,16 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { fetchBook } from '../utils/fetchBook'
+import { shortAddress } from '../utils/shortAddress.tsx'
 
 export default function BookInfo({ index }) {
   const [book, setBook] = useState([])
   const [bookMetadata, setBookMetadata] = useState([])
+  const idx = index
 
-  console.log('index: ', index)
+  console.log('index: ', idx)
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -20,8 +23,7 @@ export default function BookInfo({ index }) {
     loadBooks()
   }, [])
 
-  const coverCid = bookMetadata[0] && bookMetadata[0].image ? bookMetadata[0].image : ''
-  console.log(coverCid)
+  const coverCid = bookMetadata[idx] && bookMetadata[idx].image ? bookMetadata[idx].image : ''
   const coverImage = `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${coverCid}`
 
   return (
@@ -36,12 +38,12 @@ export default function BookInfo({ index }) {
               <Image src='/book.png' width={16} height={16} />
             </div>
             <h1 className='text-2xl font-semibold text-[#00668c] pl-1 uppercase'>
-              {bookMetadata[0] && bookMetadata[0].name ? bookMetadata[0].name : 'S3aid olbri9'}
+              {bookMetadata[idx] && bookMetadata[idx].name ? bookMetadata[idx].name : 'S3aid olbri9'}
             </h1>
           </div>
           <div className='flex my-3'>
             <p>
-              {bookMetadata[0] && bookMetadata[0].description ? bookMetadata[0].description : ''}
+              {bookMetadata[idx] && bookMetadata[idx].description ? bookMetadata[idx].description : ''}
             </p>  
           </div>
           <table>
@@ -49,7 +51,7 @@ export default function BookInfo({ index }) {
               <tr>
                 <td className="pr-12 py-2">Minted Books</td>
                 <td className="pr-12 py-2">
-                  {book[0] && book[0][3] ? book[0][3].toString() : ''}
+                  {book[idx] && book[idx][3] ? book[idx][3].toString() : ''}
                 </td>
               </tr>
               <tr>
@@ -62,7 +64,7 @@ export default function BookInfo({ index }) {
                       <Image src='/pox.png' width={28} height={28} />
                     </div>
                     <p className='text-lg font-semibold text-[#00668c] ml-2'>
-                      {book[0] && book[0][2] ? (BigInt(book[0][2]) / 10n**18n).toString() : '----'}
+                      {book[idx] && book[idx][2] ? (BigInt(book[idx][2]) / 10n**18n).toString() : '----'}
                     </p> 
                   </div>
                 </td>
@@ -80,7 +82,7 @@ export default function BookInfo({ index }) {
           <tbody>
             <tr>
               <td className="pr-[30%] py-2">Book ID</td>
-              <td className="py-2">490eb813-9...19a34f68f8</td>
+              <td className="py-2">{parseInt(idx, 10) + 1}</td>
             </tr>
             <tr>
               <td className="pr-12 py-2">Publication Date</td>
@@ -89,8 +91,8 @@ export default function BookInfo({ index }) {
             <tr>
               <td className="pr-12 py-2">Category</td>
               <td className="py-2">
-                {bookMetadata[0] && bookMetadata[0].attributes ? 
-                  bookMetadata[0].attributes.map((attribute, index) => {
+                {bookMetadata[idx] && bookMetadata[idx].attributes ? 
+                  bookMetadata[idx].attributes.map((attribute, index) => {
                     if (attribute.trait_type === "Category") {
                       return (
                         <p key={index}>{attribute.value}</p>
@@ -104,8 +106,8 @@ export default function BookInfo({ index }) {
             <tr>
               <td className="pr-12 py-2">Language</td>
               <td className="py-2">
-                {bookMetadata[0] && bookMetadata[0].attributes ? 
-                  bookMetadata[0].attributes.map((attribute, index) => {
+                {bookMetadata[idx] && bookMetadata[idx].attributes ? 
+                  bookMetadata[idx].attributes.map((attribute, index) => {
                     if (attribute.trait_type === "Language") {
                       return (
                         <p key={index}>{attribute.value}</p>
@@ -119,8 +121,8 @@ export default function BookInfo({ index }) {
             <tr>
               <td className="pr-12 py-2">Pages</td>
               <td className="py-2">
-                {bookMetadata[0] && bookMetadata[0].attributes ? 
-                  bookMetadata[0].attributes.map((attribute, index) => {
+                {bookMetadata[idx] && bookMetadata[idx].attributes ? 
+                  bookMetadata[idx].attributes.map((attribute, index) => {
                     if (attribute.trait_type === "Pages") {
                       return (
                         <p key={index}>{attribute.value}</p>
@@ -139,11 +141,21 @@ export default function BookInfo({ index }) {
         <table className='w-full mt-3'>
           <tbody>
             <tr>
-              <td className="pr-[30%] py-2">Astro</td>
+              <td className="pr-[30%] py-2">
+                {bookMetadata[idx] && bookMetadata[idx].author ? bookMetadata[idx].author : ''}
+              </td>
             </tr>
             <tr>
               <td className="pr-12 py-2">Wallet Address</td>
-              <td className="py-2">0xeBd65E2c...1Dec9fa3D5</td>
+              <td className="py-2">
+                {book[idx] && book[idx][0] ? (
+                  <Link href={`https://sepolia.etherscan.io/address/${book[idx][0]}`} target="_blank" rel="noopener noreferrer">
+                    {shortAddress(book[idx][0])}
+                  </Link>
+                ) : (
+                  '----'
+                )}
+              </td>
             </tr>
           </tbody>
         </table>
