@@ -5,10 +5,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { fetchBook } from '../utils/fetchBook'
 import { shortAddress } from '../utils/shortAddress.tsx'
+import { mintBook } from '../utils/mintBook.tsx'
 
 export default function BookInfo({ index }) {
   const [book, setBook] = useState([])
   const [bookMetadata, setBookMetadata] = useState([])
+  const [btnMessage, setBtnMessage] = useState('Mint Book')
   const idx = index
 
   console.log('index: ', idx)
@@ -25,6 +27,24 @@ export default function BookInfo({ index }) {
 
   const coverCid = bookMetadata[idx] && bookMetadata[idx].image ? bookMetadata[idx].image : ''
   const coverImage = `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${coverCid}`
+
+  const bookIndex = parseInt(idx, 10) + 1
+  const mintPrice = book[idx] && book[idx][2] ? (BigInt(book[idx][2]) / 10n**18n).toString() : '----'
+
+  const handleMintBook = async (e) => {
+    e.preventDefault()
+    try {
+      const onMessage = (message) => {
+        setBtnMessage(message)
+        console.log(message)
+      }
+      const mintedBook = await mintBook(bookIndex, mintPrice, onMessage)
+      console.log(mintedBook)
+    } catch (error) {
+      console.error('Error Minting Book!:', error)
+      
+    }
+  }
 
   return (
     <div className='max-w-7xl mx-auto my-3 p-6 bg-[#f5f4f1] rounded-lg	'>
@@ -72,7 +92,7 @@ export default function BookInfo({ index }) {
             </tbody>
           </table>
           <div className='my-3 mx-auto'>
-            <button className='px-12 py-2 rounded text-[#00668c] font-semibold border-2 border-[#00668c]'>Mint Book</button>
+            <button className='px-12 py-2 rounded text-[#00668c] font-semibold border-2 border-[#00668c] hover:bg-[#00668c] hover:text-[#f5f4f1]' onClick={handleMintBook}>{btnMessage}</button>
           </div>
         </div>
       </div>
