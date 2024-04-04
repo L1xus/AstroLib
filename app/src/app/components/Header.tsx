@@ -3,9 +3,11 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useAccount } from 'wagmi'
 
 export default function Header() {
   const [input, setInput] = useState('')
+  const { isConnected } = useAccount()
 
   const getInput = (event) => {
     setInput(event.target.value)
@@ -30,7 +32,19 @@ export default function Header() {
           <Image src="/search.svg" width={24} height={24} />
         </button>
       </div>
-      <w3m-button />
+      <div className='flex'>
+        {isConnected ? 
+          <div className='flex'>
+            <Link href="/author" className="flex items-center justify-center rounded-full border border-white/[0.05] w-9 p-1 mr-1">
+              <Image src="/add-book.png" width={24} height={24} />
+            </Link>
+            <button className="flex items-center justify-center rounded-full border border-white/[0.05] w-9 p-1 mr-1">
+              <Image src="/profile.png" width={24} height={24} />
+            </button>
+          </div>
+        : ''}
+        <w3m-button />
+      </div>
     </div>
     </div>
   )
