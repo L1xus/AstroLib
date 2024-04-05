@@ -7,7 +7,7 @@ import { parseEther, parseUnits, formatEther, formatUnits } from 'viem'
 
 export const mintBook = async (index, mintPrice, onMessage) => {
   const account = await getAccount()
-  const libraryAddress= "0x5a99dEFD8e0F1cD7fa20c318B93617De61F0A413"
+  const libraryAddress= "0x719De6c0f3F0B9B7895f381b0115B614a30857a7"
   const poxAddress = "0x7bEea9EAb0610008605ce9ad3C10BD2608646AB8"
 
   try {

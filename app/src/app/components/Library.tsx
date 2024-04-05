@@ -9,6 +9,9 @@ export default function Library() {
   const [books, setBooks] = useState([])
   const [booksMetadata, setBooksMetadata] = useState([])
 
+  console.log(books)
+  console.log(booksMetadata)
+
   useEffect(() => {
     const loadBooks = async () => {
       const { books, booksMetadata } = await fetchBook()
@@ -59,7 +62,7 @@ export default function Library() {
                     <Image src='/pox.png' width={28} height={28} />
                   </div>
                   <p className='text-lg font-semibold text-[#00668c] ml-2'>
-                    {books[0][2] ? (BigInt(books[0][2]) / 10n**18n).toString() : '----'}
+                    {books[idx][2] ? (BigInt(books[idx][2]) / 10n**18n).toString() : '----'}
                   </p> 
                 </div>
               </div>

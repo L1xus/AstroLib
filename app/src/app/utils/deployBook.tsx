@@ -5,7 +5,7 @@ import PFLibrary from '../artifacts/contracts/PFLibrary.sol/PFLibrary'
 
 export const deployBook = async (author, metadataHash) => {
   const account = await getAccount()
-  const libraryAddress= "0xca0D7896EA09bc72cA491E4c0DC3f1d7eebEaBA3"
+  const libraryAddress= "0x719De6c0f3F0B9B7895f381b0115B614a30857a7"
   const authorAddress = author
   const tokenUri = `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${metadataHash}`
 

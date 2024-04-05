@@ -15,7 +15,9 @@ contract PFLibrary is ERC721URIStorage {
   }
 
   uint256 public bookCount;
+  uint256 public totalBooksMinted;
   mapping(uint256 => Book) public books;
+  mapping(address => uint256[]) public ownedBooks;
 
   constructor(address _poxAddress) ERC721("PFLibrary", "PFL") {
     poxToken = PFToken(_poxAddress);
@@ -31,9 +33,12 @@ contract PFLibrary is ERC721URIStorage {
     require(poxToken.transferFrom(msg.sender, books[bookId].author, books[bookId].price), "Token transfer failed");
 
     books[bookId].totalSupply++;
+    totalBooksMinted++;
 
-    _mint(recipient, books[bookId].totalSupply);
-    _setTokenURI(books[bookId].totalSupply, books[bookId].tokenURI);
+    _mint(recipient, totalBooksMinted);
+    _setTokenURI(totalBooksMinted, books[bookId].tokenURI);
+
+    ownedBooks[recipient].push(totalBooksMinted);
   }
 
   function totalBooks() public view returns (uint256) {
@@ -44,6 +49,10 @@ contract PFLibrary is ERC721URIStorage {
     require(bytes(books[bookId].tokenURI).length != 0, "Book does not exist");
     Book storage book = books[bookId];
     return (book.author, book.tokenURI, book.price, book.totalSupply);
+  }
+
+  function getOwnedBooks(address owner) public view returns (uint256[] memory) {
+    return ownedBooks[owner];
   }
 }
 

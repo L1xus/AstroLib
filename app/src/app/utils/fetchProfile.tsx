@@ -3,7 +3,7 @@
 import { getAccount, publicClient, walletClient } from './config'
 import PFLibrary from '../artifacts/contracts/PFLibrary.sol/PFLibrary'
 
-const fetchBookMetadata = async (tokenUri) => {
+const fetchProfileMetadata = async (tokenUri) => {
   try {
     const metadata = await fetch(tokenUri)
     const metadataText = await metadata.text()
@@ -15,40 +15,41 @@ const fetchBookMetadata = async (tokenUri) => {
   }
 }
 
-export const fetchBook = async () => {
+export const fetchProfile = async () => {
   try {
     const account = await getAccount()
     const libraryAddress= "0x719De6c0f3F0B9B7895f381b0115B614a30857a7"
-    const books = []
-    const booksMetadata = []
+    const mintedBooks = []
+    const mintedBooksMetadata = []
 
-    const totalBooks = await publicClient.readContract({
+    const ownedBooks = await publicClient.readContract({
       address: libraryAddress,
       abi: PFLibrary.abi,
-      functionName: 'totalBooks',
+      functionName: 'getOwnedBooks',
+      args: [account]
     })
 
-    console.log('totalBooks: ', totalBooks)
-
-    for (let i=1; i<=totalBooks; i++) {
+    for (let i=0; i<ownedBooks.length; i++) {
+      let j = parseInt(ownedBooks[i])
       const book = await publicClient.readContract({
         address: libraryAddress,
         abi: PFLibrary.abi,
-        functionName: 'getBook',
-        args: [i]
+        functionName: 'tokenURI',
+        args: [j]
       })
-      books.push(book)
-      console.log('boooooooook',book.length)
+      mintedBooks.push(book)
 
-      const metadataJson = await fetchBookMetadata(book[1])
+      const metadataJson = await fetchProfileMetadata(mintedBooks[i])
       if (metadataJson) {
-        booksMetadata.push(metadataJson)
+        mintedBooksMetadata.push(metadataJson)
       }
     }
+    console.log('mintedBooks: ', mintedBooks)
+    console.log('mintedBooksMetadata: ', mintedBooksMetadata)
 
-    return { books, booksMetadata }
+    return { mintedBooks, mintedBooksMetadata }
   } catch (error) {
-    console.error('shit adding book!', error)
+    console.error('shit getting book!', error)
     throw error
   }
 }

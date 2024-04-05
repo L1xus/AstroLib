@@ -38,9 +38,9 @@ export default function Header() {
             <Link href="/author" className="flex items-center justify-center rounded-full border border-white/[0.05] w-9 p-1 mr-1">
               <Image src="/add-book.png" width={24} height={24} />
             </Link>
-            <button className="flex items-center justify-center rounded-full border border-white/[0.05] w-9 p-1 mr-1">
+            <Link href="/profile" className="flex items-center justify-center rounded-full border border-white/[0.05] w-9 p-1 mr-1">
               <Image src="/profile.png" width={24} height={24} />
-            </button>
+            </Link>
           </div>
         : ''}
         <w3m-button />
