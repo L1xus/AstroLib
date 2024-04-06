@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { fetchProfile } from '../utils/fetchProfile.tsx'
+import { getAccount, publicClient, walletClient } from '../utils/config'
 
 export default function Profile() {
   const [books, setBooks] = useState([])
@@ -18,6 +19,20 @@ export default function Profile() {
 
     loadBooks()
   }, [])
+
+  const handleRead = async (ipfsHash) => {
+    const account = await getAccount()
+    const message = 'I agree to read this book!'
+
+    const signature = await walletClient.signMessage({
+      account,
+      message,
+    })
+
+    window.location.href = `/profile/reading/${encodeURIComponent(ipfsHash)}?signature=${encodeURIComponent(signature)}`
+  }
+
+
 
   return (
     <div className='max-w-7xl mx-auto my-3 p-6 bg-[#f5f4f1] rounded-lg'>
@@ -36,11 +51,9 @@ export default function Profile() {
                 `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${booksMetadata[idx] && booksMetadata[idx].image ? booksMetadata[idx].image : ''}`}
                 alt="" className="h-full object-cover rounded" loading="lazy" />
             </div>
-            <Link href={`/profile/reading/${encodeURIComponent(book.ipfsHash)}`}>
-              <button className='m-1 p-2 w-full text-md font-semibold text-[#f5f4f1] bg-[#fe7e01] rounded hover:bg-[#f19132]'>
+              <button className='m-1 p-2 w-full text-md font-semibold text-[#f5f4f1] bg-[#fe7e01] rounded hover:bg-[#f19132]' onClick={() => handleRead(book.ipfsHash)}>
                 Read Book
               </button>
-            </Link>
           </div>
         ))}
       </div>
