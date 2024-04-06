@@ -36,9 +36,11 @@ export default function Profile() {
                 `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${booksMetadata[idx] && booksMetadata[idx].image ? booksMetadata[idx].image : ''}`}
                 alt="" className="h-full object-cover rounded" loading="lazy" />
             </div>
-            <button className='m-1 p-2 w-full text-md font-semibold text-[#f5f4f1] bg-[#fe7e01] rounded hover:bg-[#f19132]'>
+            <Link href={`/profile/reading/${encodeURIComponent(book.ipfsHash)}`}>
+              <button className='m-1 p-2 w-full text-md font-semibold text-[#f5f4f1] bg-[#fe7e01] rounded hover:bg-[#f19132]'>
                 Read Book
-            </button>
+              </button>
+            </Link>
           </div>
         ))}
       </div>
