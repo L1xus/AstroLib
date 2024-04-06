@@ -15,8 +15,6 @@ export default function Read({ params }: { params: { read: string } }) {
   const urlParams = useSearchParams()
   const signature = urlParams.get('signature')
   
-  console.log('Viem: ', verifyMessage)
-
   useEffect(() => {
     window.history.pushState({}, null, '/read')
 

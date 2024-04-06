@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { deployBook } from '../utils/deployBook'
 
 export default function BookInfo() {
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     authorName: '',
     wallet: '',
     bookTitle: '',
@@ -18,12 +18,17 @@ export default function BookInfo() {
     image: '',
     coverImage: null,
     book: null
-  })
+  }
+  const [formData, setFormData] = useState(initialFormData)
   const [metadataHash, setMetadataHash] = useState('')
   const [coverUploading, setCoverUploading] = useState(false)
   const [bookUploading, setBookUploading] = useState(false)
   const inputCoverImage = useRef(null)
   let addBook 
+
+  const resetForm = () => {
+    setFormData(initialFormData)
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -102,6 +107,7 @@ export default function BookInfo() {
 
   const handleDeployBook = async (e) => {
     e.preventDefault()
+    console.log('FormData: ', formData.price)
     if ( formData.ipfsHash && formData.image ) {
       const metadata = {
         name: formData.bookTitle,
@@ -151,9 +157,9 @@ export default function BookInfo() {
       }
 
       console.log('metadataHash: ', metadataHash)
-      addBook = await deployBook(formData.wallet, metadataHash)
+      addBook = await deployBook(formData.wallet, metadataHash, formData.price)
       console.log('book added! ', addBook)
-
+      resetForm() 
     }
   }
 

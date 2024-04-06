@@ -37,7 +37,7 @@ export default function Profile() {
   return (
     <div className='max-w-7xl mx-auto my-3 p-6 bg-[#f5f4f1] rounded-lg'>
       <h1 className='text-xl font-semibold ps-1 uppercase text-[#00668c]'>Profile</h1>
-      <div className='flex'>
+      <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4'>
         {booksMetadata.map((book, idx) => (
           <div key={idx} className='flex flex-col items-center justify-center shadow-xl rounded p-3 m-3 bg-[#b6ccd8]'>
             <div className='flex items-center'>

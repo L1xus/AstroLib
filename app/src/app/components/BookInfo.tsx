@@ -58,7 +58,7 @@ export default function BookInfo({ index }) {
               <Image src='/book.png' width={16} height={16} />
             </div>
             <h1 className='text-2xl font-semibold text-[#00668c] pl-1 uppercase'>
-              {bookMetadata[idx] && bookMetadata[idx].name ? bookMetadata[idx].name : 'S3aid olbri9'}
+              {bookMetadata[idx] && bookMetadata[idx].name ? bookMetadata[idx].name : 'loading...'}
             </h1>
           </div>
           <div className='flex my-3'>
@@ -71,7 +71,7 @@ export default function BookInfo({ index }) {
               <tr>
                 <td className="pr-12 py-2">Minted Books</td>
                 <td className="pr-12 py-2">
-                  {book[idx] && book[idx][3] ? book[idx][3].toString() : ''}
+                  {book[idx] && book[idx][3] ? book[idx][3].toString() : '0'}
                 </td>
               </tr>
               <tr>
