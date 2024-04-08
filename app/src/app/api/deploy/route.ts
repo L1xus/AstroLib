@@ -1,8 +1,5 @@
 import { NextResponse, NextRequest } from "next/server"
 
-export const dynamic = 'force-static'
-export const revalidate = 60
-
 export async function POST(request: NextRequest) {
   if (request.method === 'POST') {
     try {
