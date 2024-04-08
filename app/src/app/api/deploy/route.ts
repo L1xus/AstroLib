@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
       if (!metadataBlob) {
         return NextResponse.json({ error: 'Metadata is required' }, { status: 400 })
       }
-      const metadataString = await metadataBlob.text()
+      const metadataString = await (metadataBlob as Blob).text()
       const metadata = JSON.parse(metadataString)
       console.log(metadata)
 
