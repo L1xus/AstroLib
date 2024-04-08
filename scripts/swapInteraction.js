@@ -7,7 +7,7 @@ async function main() {
 
   try {
     const poolETH = await swapApp.depositETH({
-      value: ethers.parseEther("0.05"),
+      value: ethers.parseEther("1"),
     })
     await poolETH.wait()
     console.log("ETH P00led! at ", swapApp.target)
@@ -20,7 +20,7 @@ async function main() {
   const poxContract = new ethers.Contract(poxAddress, ["function approve(address spender, uint256 amount) external returns (bool)"], deployer)
 
   // Define the amount of POX tokens to deposit
-  const amountToDeposit = ethers.parseUnits("1000", 18)
+  const amountToDeposit = ethers.parseUnits("4000000", 18)
 
   try {
     // Approve the PFSwap contract to spend POX tokens on your behalf
@@ -35,6 +35,7 @@ async function main() {
   } catch (error) {
     console.error("Failed to deposit POX:", error)
   }
+  /*
 
   const amountPoxToSwap = ethers.parseUnits("50", 18)
 
@@ -59,7 +60,7 @@ async function main() {
   } catch (error) {
     console.error("Failed to swap ETH!", error)
   }
-  /*
+
   const amountEth = ethers.parseEther("0.097")
   try {
    const withdrawETH = await swapApp.withdrawETH(amountEth)
