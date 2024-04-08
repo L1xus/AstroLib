@@ -1,6 +1,6 @@
-import Header from '../components/Header.tsx'
-import SwapApp from '../components/SwapApp.tsx'
-import Footer from '../components/Footer.tsx'
+import Header from '../components/Header'
+import SwapApp from '../components/SwapApp'
+import Footer from '../components/Footer'
 
 export default function Swap() {
   return (

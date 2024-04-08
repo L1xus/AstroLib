@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { fetchProfile } from '../utils/fetchProfile.tsx'
+import { fetchProfile } from '../utils/fetchProfile'
 import { getAccount, publicClient, walletClient } from '../utils/config'
 
 export default function Profile() {

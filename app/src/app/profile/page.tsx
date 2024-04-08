@@ -1,6 +1,6 @@
-import Header from '../components/Header.tsx'
-import Profile from '../components/Profile.tsx'
-import Footer from '../components/Footer.tsx'
+import Header from '../components/Header'
+import Profile from '../components/Profile'
+import Footer from '../components/Footer'
 
 export default function ProfilePage() {
   return (

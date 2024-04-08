@@ -1,11 +1,11 @@
 'use client'
 
-import Header from '../../../components/Header.tsx'
-import PdfViewer from '../../../components/PdfViewer.tsx'
-import Footer from '../../../components/Footer.tsx'
+import Header from '../../../components/Header'
+import PdfViewer from '../../../components/PdfViewer'
+import Footer from '../../../components/Footer'
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { getAccount } from '../../../utils/config.tsx'
+import { getAccount } from '../../../utils/config'
 import { verifyMessage } from 'viem'
 
 export default function Read({ params }: { params: { read: string } }) {

@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { fetchBook } from '../utils/fetchBook'
-import { shortAddress } from '../utils/shortAddress.tsx'
-import { mintBook } from '../utils/mintBook.tsx'
+import { shortAddress } from '../utils/shortAddress'
+import { mintBook } from '../utils/mintBook'
 
 export default function BookInfo({ index }) {
   const [book, setBook] = useState([])

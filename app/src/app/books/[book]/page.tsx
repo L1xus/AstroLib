@@ -1,8 +1,8 @@
 'use client'
 
-import Header from '../../components/Header.tsx'
-import BookInfo from '../../components/BookInfo.tsx' 
-import Footer from '../../components/Footer.tsx'
+import Header from '../../components/Header'
+import BookInfo from '../../components/BookInfo' 
+import Footer from '../../components/Footer'
 import { useSearchParams } from 'next/navigation'
 
 export default function Book() {

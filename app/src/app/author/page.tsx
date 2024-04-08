@@ -1,6 +1,6 @@
-import Header from '../components/Header.tsx'
-import Author from '../components/Author.tsx' 
-import Footer from '../components/Footer.tsx'
+import Header from '../components/Header'
+import Author from '../components/Author' 
+import Footer from '../components/Footer'
 
 export default function Swap() {
   return (
