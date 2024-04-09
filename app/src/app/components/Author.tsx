@@ -1,11 +1,27 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, ChangeEvent, FormEvent } from 'react'
 import Image from 'next/image'
 import { deployBook } from '../utils/deployBook'
 
-export default function BookInfo() {
-  const initialFormData = {
+interface FormData {
+  authorName: string
+  wallet: string
+  bookTitle: string
+  pages: string
+  description: string
+  category: string
+  language: string
+  price: string
+  ipfsHash: string
+  image: string
+  coverImage: File | null
+  coverImagePreview?: string
+  book: File | null
+}
+
+export default function BookInfo(): JSX.Element {
+  const initialFormData: FormData = {
     authorName: '',
     wallet: '',
     bookTitle: '',
@@ -17,39 +33,42 @@ export default function BookInfo() {
     ipfsHash: '',
     image: '',
     coverImage: null,
-    book: null
+    book: null,
   }
-  const [formData, setFormData] = useState(initialFormData)
-  const [metadataHash, setMetadataHash] = useState('')
-  const [coverUploading, setCoverUploading] = useState(false)
-  const [bookUploading, setBookUploading] = useState(false)
-  const inputCoverImage = useRef(null)
-  let addBook 
+  const [formData, setFormData] = useState<FormData>(initialFormData)
+  const [coverUploading, setCoverUploading] = useState<boolean>(false)
+  const [bookUploading, setBookUploading] = useState<boolean>(false)
+  const inputCoverImage = useRef<HTMLInputElement>(null)
+  let addBook: any
 
-  const resetForm = () => {
+  const resetForm = (): void => {
     setFormData(initialFormData)
   }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-      setFormData(prevState => ({
-        ...prevState,
-        [name]: value
-      }))
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target as HTMLInputElement;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value,
+    }))
   }
 
-  const handleCoverImage = async (e) => {
+  const handleCoverImage = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
+    if (!e.target.files || e.target.files.length === 0) {
+      console.error('No file selected')
+      return
+    }
     const file = e.target.files[0]
     const reader = new FileReader()
     reader.onload = () => {
-      setFormData(prevState => ({
+      setFormData((prevState) => ({
         ...prevState,
         coverImage: file,
-        coverImagePreview: reader.result
+        coverImagePreview: reader.result as string,
       }))
     }
     reader.readAsDataURL(file)
-    
+
     try {
       setCoverUploading(true)
       const imgData = new FormData()
@@ -60,11 +79,11 @@ export default function BookInfo() {
       })
       const jsonHash = await res.json()
       const ipfsHash = jsonHash.IpfsHash
-      console.log('coverIfpsHash:',ipfsHash)
+      console.log('coverIfpsHash:', ipfsHash)
 
-      setFormData(prevState => ({
+      setFormData((prevState) => ({
         ...prevState,
-        image: ipfsHash
+        image: ipfsHash,
       }))
       setCoverUploading(false)
     } catch (error) {
@@ -74,11 +93,15 @@ export default function BookInfo() {
     }
   }
 
-  const handleBook = async (e) => {
+  const handleBook = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
+    if (!e.target.files || e.target.files.length === 0) {
+      console.error('No file selected')
+      return
+    }
     const file = e.target.files[0]
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      book: file
+      book: file,
     }))
 
     try {
@@ -91,11 +114,11 @@ export default function BookInfo() {
       })
       const jsonHash = await res.json()
       const ipfsHash = jsonHash.IpfsHash
-      console.log('bookIfpsHash:',ipfsHash)
+      console.log('bookIfpsHash:', ipfsHash)
 
-      setFormData(prevState => ({
+      setFormData((prevState) => ({
         ...prevState,
-        ipfsHash: `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${ipfsHash}`
+        ipfsHash: `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${ipfsHash}`,
       }))
       setBookUploading(false)
     } catch (error) {
@@ -105,10 +128,10 @@ export default function BookInfo() {
     }
   }
 
-  const handleDeployBook = async (e) => {
+  const handleDeployBook = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
     console.log('FormData: ', formData.price)
-    if ( formData.ipfsHash && formData.image ) {
+    if (formData.ipfsHash && formData.image) {
       const metadata = {
         name: formData.bookTitle,
         author: formData.authorName,
@@ -119,17 +142,17 @@ export default function BookInfo() {
         attributes: [
           {
             trait_type: 'Category',
-            value: formData.category
+            value: formData.category,
           },
           {
             trait_type: 'Language',
-            value: formData.language
+            value: formData.language,
           },
           {
             trait_type: 'Pages',
-            value: formData.pages
-          }
-        ]
+            value: formData.pages,
+          },
+        ],
       }
       console.log(metadata)
       const metadataString = JSON.stringify(metadata)
@@ -146,20 +169,20 @@ export default function BookInfo() {
           method: 'POST',
           body: metadataFormData,
         })
-        const metadataJsonHash = await metadataRes.json();
-        const metadataIpfsHash = metadataJsonHash.IpfsHash;
+        const metadataJsonHash = await metadataRes.json()
+        const metadataIpfsHash = metadataJsonHash.IpfsHash
 
         metadataHash = metadataIpfsHash
 
-        console.log('metadataIpfsHash:', metadataIpfsHash);
+        console.log('metadataIpfsHash:', metadataIpfsHash)
       } catch (error) {
-        console.error('Error uploading metadata to IPFS:', error);
+        console.error('Error uploading metadata to IPFS:', error)
       }
 
       console.log('metadataHash: ', metadataHash)
       addBook = await deployBook(formData.wallet, metadataHash, formData.price)
       console.log('book added! ', addBook)
-      resetForm() 
+      resetForm()
     }
   }
 
@@ -305,9 +328,9 @@ export default function BookInfo() {
                   ) : (
                     <>
                       {formData.coverImagePreview ? (
-                        <Image src={formData.coverImagePreview} width={250} height={320} />
+                        <Image src={formData.coverImagePreview} width={250} height={320} alt="Cover Image Preview" />
                       ) : (
-                        <Image src="/plus.png" width={20} height={20} />
+                        <Image src="/plus.png" width={20} height={20} alt="Cover Image" />
                       )}
                     </>
                   )}
@@ -336,11 +359,11 @@ export default function BookInfo() {
                     <>
                       {formData.book ? (
                         <span className='flex'>
-                          <Image src="/book.png" width={20} height={20} />
+                          <Image src="/book.png" width={20} height={20} alt="Book Preview" />
                           {formData.book.name}
                         </span>
                       ) : (
-                        <Image src="/plus.png" width={20} height={20} />
+                        <Image src="/plus.png" width={20} height={20} alt="add Book" />
                       )}
                     </>
                   )}
@@ -365,6 +388,5 @@ export default function BookInfo() {
         </form>
      </div>
     </div>
-      
   )
 } 

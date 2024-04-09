@@ -12,7 +12,7 @@ export default function Book() {
   return (
     <main className="min-h-screen">
       <Header/>
-      <BookInfo index={idx}/>
+      <BookInfo index={parseInt(idx ?? '0', 10)}/>
       <Footer/>
     </main>
   )

@@ -7,8 +7,11 @@ import type { ToolbarProps, ToolbarSlot, TransformToolbarSlot } from '@react-pdf
 import '@react-pdf-viewer/core/lib/styles/index.css'
 import '@react-pdf-viewer/default-layout/lib/styles/index.css'
 
+interface PdfViewerProps {
+  url: string
+}
 
-const PdfViewer = ({ url }) => {
+const PdfViewer = ({ url }: PdfViewerProps) => {
     const transform: TransformToolbarSlot = (slot: ToolbarSlot) => ({
         ...slot,
         Download: () => <></>,

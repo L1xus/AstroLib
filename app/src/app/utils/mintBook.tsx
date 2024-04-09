@@ -1,11 +1,11 @@
 'use client'
 
 import { getAccount, publicClient, walletClient } from './config'
-import PFLibrary from '../artifacts/contracts/PFLibrary.sol/PFLibrary'
-import PFToken from '../artifacts/contracts/PFToken.sol/PFToken'
+import PFLibrary from '../artifacts/contracts/PFLibrary.sol/PFLibrary.json'
+import PFToken from '../artifacts/contracts/PFToken.sol/PFToken.json'
 import { parseEther, parseUnits, formatEther, formatUnits } from 'viem'
 
-export const mintBook = async (index, mintPrice, onMessage) => {
+export const mintBook = async (index: number, mintPrice: string, onMessage: (message: string) => void) => {
   const account = await getAccount()
   const libraryAddress= "0x719De6c0f3F0B9B7895f381b0115B614a30857a7"
   const poxAddress = "0x7bEea9EAb0610008605ce9ad3C10BD2608646AB8"

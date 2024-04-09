@@ -2,14 +2,15 @@
 
 import { createWalletClient, custom, createPublicClient, http } from 'viem'
 import { sepolia } from 'viem/chains'
+import 'viem/window'
  
 export const publicClient = createPublicClient({
   chain: sepolia,
   transport: http(process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL)
 })
  
-let walletClient
-if (typeof window !== 'undefined') {
+let walletClient: any
+if (typeof window !== 'undefined' && window.ethereum) {
   walletClient = createWalletClient({
     chain: sepolia,
     transport: custom(window.ethereum)

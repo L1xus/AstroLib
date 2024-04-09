@@ -6,11 +6,21 @@ import Link from 'next/link'
 import { fetchBook } from '../utils/fetchBook'
 import { shortAddress } from '../utils/shortAddress'
 import { mintBook } from '../utils/mintBook'
+import { formatUnits } from 'viem'
 
-export default function BookInfo({ index }) {
-  const [book, setBook] = useState([])
-  const [bookMetadata, setBookMetadata] = useState([])
-  const [btnMessage, setBtnMessage] = useState('Mint Book')
+interface BookInfoProps {
+  index: number
+}
+
+interface Attribute {
+ trait_type: string;
+ value: string;
+}
+
+export default function BookInfo({ index }: BookInfoProps) {
+  const [book, setBook] = useState<any[]>([])
+  const [bookMetadata, setBookMetadata] = useState<any[]>([])
+  const [btnMessage, setBtnMessage] = useState<string>('Mint Book')
   const idx = index
 
   console.log('index: ', idx)
@@ -28,13 +38,13 @@ export default function BookInfo({ index }) {
   const coverCid = bookMetadata[idx] && bookMetadata[idx].image ? bookMetadata[idx].image : ''
   const coverImage = `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${coverCid}`
 
-  const bookIndex = parseInt(idx, 10) + 1
-  const mintPrice = book[idx] && book[idx][2] ? (BigInt(book[idx][2]) / 10n**18n).toString() : '----'
+  const bookIndex = idx + 1
+  const mintPrice = book[idx] && book[idx][2] ? (formatUnits(book[idx][2], 18)).toString() : '----'
 
-  const handleMintBook = async (e) => {
+  const handleMintBook = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     try {
-      const onMessage = (message) => {
+      const onMessage = (message: string) => {
         setBtnMessage(message)
         console.log(message)
       }
@@ -55,7 +65,7 @@ export default function BookInfo({ index }) {
         <div className='flex-grow my-auto px-5'>
           <div className='flex items-center'>
             <div style={{ width: '16px', height: '16px' }}>
-              <Image src='/book.png' width={16} height={16} />
+              <Image src='/book.png' width={16} height={16} alt="" />
             </div>
             <h1 className='text-2xl font-semibold text-[#00668c] pl-1 uppercase'>
               {bookMetadata[idx] && bookMetadata[idx].name ? bookMetadata[idx].name : 'loading...'}
@@ -81,10 +91,10 @@ export default function BookInfo({ index }) {
                 <td className="pr-12 py-2">
                   <div className='flex'>
                     <div style={{ width: '28px', height: '28px' }} className='rounded-full'>
-                      <Image src='/pox.png' width={28} height={28} />
+                      <Image src='/pox.png' width={28} height={28} alt="" />
                     </div>
                     <p className='text-lg font-semibold text-[#00668c] ml-2'>
-                      {book[idx] && book[idx][2] ? (BigInt(book[idx][2]) / 10n**18n).toString() : '----'}
+                      {book[idx] && book[idx][2] ? (formatUnits(book[idx][2], 18)).toString() : '----'}
                     </p> 
                   </div>
                 </td>
@@ -102,7 +112,7 @@ export default function BookInfo({ index }) {
           <tbody>
             <tr>
               <td className="pr-[30%] py-2">Book ID</td>
-              <td className="py-2">{parseInt(idx, 10) + 1}</td>
+              <td className="py-2">{idx + 1}</td>
             </tr>
             <tr>
               <td className="pr-12 py-2">Publication Date</td>
@@ -112,7 +122,7 @@ export default function BookInfo({ index }) {
               <td className="pr-12 py-2">Category</td>
               <td className="py-2">
                 {bookMetadata[idx] && bookMetadata[idx].attributes ? 
-                  bookMetadata[idx].attributes.map((attribute, index) => {
+                  bookMetadata[idx].attributes.map((attribute: Attribute, index: number) => {
                     if (attribute.trait_type === "Category") {
                       return (
                         <p key={index}>{attribute.value}</p>
@@ -127,7 +137,7 @@ export default function BookInfo({ index }) {
               <td className="pr-12 py-2">Language</td>
               <td className="py-2">
                 {bookMetadata[idx] && bookMetadata[idx].attributes ? 
-                  bookMetadata[idx].attributes.map((attribute, index) => {
+                  bookMetadata[idx].attributes.map((attribute: Attribute, index: number) => {
                     if (attribute.trait_type === "Language") {
                       return (
                         <p key={index}>{attribute.value}</p>
@@ -142,7 +152,7 @@ export default function BookInfo({ index }) {
               <td className="pr-12 py-2">Pages</td>
               <td className="py-2">
                 {bookMetadata[idx] && bookMetadata[idx].attributes ? 
-                  bookMetadata[idx].attributes.map((attribute, index) => {
+                  bookMetadata[idx].attributes.map((attribute: Attribute, index: number) => {
                     if (attribute.trait_type === "Pages") {
                       return (
                         <p key={index}>{attribute.value}</p>

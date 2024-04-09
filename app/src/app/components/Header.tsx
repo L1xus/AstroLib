@@ -9,7 +9,7 @@ export default function Header() {
   const [input, setInput] = useState('')
   const { isConnected } = useAccount()
 
-  const getInput = (event) => {
+  const getInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value)
   }
 
@@ -29,17 +29,17 @@ export default function Header() {
           className='w-full px-5 bg-inherit outline-none'
         />
         <button>
-          <Image src="/search.svg" width={24} height={24} />
+          <Image src="/search.svg" width={24} height={24} alt="search"/>
         </button>
       </div>
       <div className='flex'>
         {isConnected ? 
           <div className='flex'>
             <Link href="/author" className="flex items-center justify-center rounded-full border border-white/[0.05] w-9 p-1 mr-1">
-              <Image src="/add-book.png" width={24} height={24} />
+              <Image src="/add-book.png" width={24} height={24} alt="author" />
             </Link>
             <Link href="/profile" className="flex items-center justify-center rounded-full border border-white/[0.05] w-9 p-1 mr-1">
-              <Image src="/profile.png" width={24} height={24} />
+              <Image src="/profile.png" width={24} height={24} alt="profile" />
             </Link>
           </div>
         : ''}

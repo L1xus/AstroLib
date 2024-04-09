@@ -1,9 +1,9 @@
 'use client'
 
 import { getAccount, publicClient, walletClient } from './config'
-import PFLibrary from '../artifacts/contracts/PFLibrary.sol/PFLibrary'
+import PFLibrary from '../artifacts/contracts/PFLibrary.sol/PFLibrary.json'
 
-const fetchBookMetadata = async (tokenUri) => {
+const fetchBookMetadata = async (tokenUri: string) => {
   try {
     const metadata = await fetch(tokenUri)
     const metadataText = await metadata.text()
@@ -19,8 +19,8 @@ export const fetchBook = async () => {
   try {
     const account = await getAccount()
     const libraryAddress= "0x719De6c0f3F0B9B7895f381b0115B614a30857a7"
-    const books = []
-    const booksMetadata = []
+    const books: any[] = []
+    const booksMetadata: any[] = []
 
     const totalBooks = await publicClient.readContract({
       address: libraryAddress,
@@ -28,17 +28,19 @@ export const fetchBook = async () => {
       functionName: 'totalBooks',
     })
 
-    console.log('totalBooks: ', totalBooks)
+    const totalBooksNumber = Number(totalBooks)
 
-    for (let i=1; i<=totalBooks; i++) {
-      const book = await publicClient.readContract({
+    console.log('totalBooks: ', totalBooksNumber)
+
+    for (let i=1; i<=totalBooksNumber; i++) {
+      const bookResponse = await publicClient.readContract({
         address: libraryAddress,
         abi: PFLibrary.abi,
         functionName: 'getBook',
         args: [i]
       })
+      const book = Array.isArray(bookResponse) ? bookResponse : []
       books.push(book)
-      console.log('boooooooook',book.length)
 
       const metadataJson = await fetchBookMetadata(book[1])
       if (metadataJson) {

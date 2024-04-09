@@ -1,9 +1,9 @@
 'use client'
 
 import { getAccount, publicClient, walletClient } from './config'
-import PFLibrary from '../artifacts/contracts/PFLibrary.sol/PFLibrary'
+import PFLibrary from '../artifacts/contracts/PFLibrary.sol/PFLibrary.json'
 
-const fetchProfileMetadata = async (tokenUri) => {
+const fetchProfileMetadata = async (tokenUri: string) => {
   try {
     const metadata = await fetch(tokenUri)
     const metadataText = await metadata.text()
@@ -29,8 +29,8 @@ export const fetchProfile = async () => {
       args: [account]
     })
 
-    for (let i=0; i<ownedBooks.length; i++) {
-      let j = parseInt(ownedBooks[i])
+    for (let i=0; i<(ownedBooks as number[]).length; i++) {
+      let j = parseInt((ownedBooks as number[])[i].toString())
       const book = await publicClient.readContract({
         address: libraryAddress,
         abi: PFLibrary.abi,
@@ -39,7 +39,7 @@ export const fetchProfile = async () => {
       })
       mintedBooks.push(book)
 
-      const metadataJson = await fetchProfileMetadata(mintedBooks[i])
+      const metadataJson = await fetchProfileMetadata(mintedBooks[i] as string)
       if (metadataJson) {
         mintedBooksMetadata.push(metadataJson)
       }

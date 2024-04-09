@@ -7,8 +7,8 @@ import { fetchProfile } from '../utils/fetchProfile'
 import { getAccount, publicClient, walletClient } from '../utils/config'
 
 export default function Profile() {
-  const [books, setBooks] = useState([])
-  const [booksMetadata, setBooksMetadata] = useState([])
+  const [books, setBooks] = useState<any[]>([])
+  const [booksMetadata, setBooksMetadata] = useState<any[]>([])
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -20,7 +20,7 @@ export default function Profile() {
     loadBooks()
   }, [])
 
-  const handleRead = async (ipfsHash) => {
+  const handleRead = async (ipfsHash: string) => {
     const account = await getAccount()
     const message = 'I agree to read this book!'
 
@@ -42,7 +42,7 @@ export default function Profile() {
           <div key={idx} className='flex flex-col items-center justify-center shadow-xl rounded p-3 m-3 bg-[#b6ccd8]'>
             <div className='flex items-center'>
               <div style={{ width: '16px', height: '16px' }}>
-                <Image src='/book.png' width={16} height={16} />
+                <Image src='/book.png' width={16} height={16} alt="" />
               </div>
               <h1 className='text-lg font-semibold text-[#00668c] pl-1 uppercase'>{book.name}</h1>
             </div>

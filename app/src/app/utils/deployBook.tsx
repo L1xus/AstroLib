@@ -1,10 +1,10 @@
 'use client'
 
 import { getAccount, publicClient, walletClient } from './config'
-import PFLibrary from '../artifacts/contracts/PFLibrary.sol/PFLibrary'
+import PFLibrary from '../artifacts/contracts/PFLibrary.sol/PFLibrary.json'
 import { parseUnits } from 'viem'
 
-export const deployBook = async (author, metadataHash, price) => {
+export const deployBook = async (author: string, metadataHash: string, price: string) => {
   const account = await getAccount()
   const libraryAddress= "0x719De6c0f3F0B9B7895f381b0115B614a30857a7"
   const authorAddress = author

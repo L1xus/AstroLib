@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ChangeEvent } from 'react'
 import Image from 'next/image'
 import { getAccount, publicClient, walletClient } from '../utils/config'
-import PFSwap from '../artifacts/contracts/PFSwap.sol/PFSwap'
-import PFToken from '../artifacts/contracts/PFToken.sol/PFToken'
+import PFSwap from '../artifacts/contracts/PFSwap.sol/PFSwap.json'
+import PFToken from '../artifacts/contracts/PFToken.sol/PFToken.json'
 import { parseEther, parseUnits, formatEther, formatUnits } from 'viem'
 
 export default function SwapApp() {
@@ -26,7 +26,7 @@ export default function SwapApp() {
         const ethData = await publicClient.getBalance({
           address: swapAddress
         })
-        setEthBalance(formatEther(ethData.toString()))
+        setEthBalance(Number(formatEther(ethData)))
 
         const poxData = await publicClient.readContract({
           address: poxAddress,
@@ -34,14 +34,16 @@ export default function SwapApp() {
           functionName: 'balanceOf',
           args: [swapAddress]
         })
-        setPoxBalance(formatUnits(poxData.toString(), 18))
+        if(typeof poxData === 'bigint') {
+          setPoxBalance(Number(formatUnits(poxData, 18)))
+        }
 
         const walletAddress = await getAccount()
 
         const ethWalletData = await publicClient.getBalance({
           address: walletAddress
         })
-        setWalletEthBalance(parseFloat(formatEther(ethWalletData.toString())).toFixed(3))
+        setWalletEthBalance(parseFloat(Number(formatEther(ethWalletData)).toFixed(3)))
 
         const poxWalletData = await publicClient.readContract({
           address: poxAddress,
@@ -49,7 +51,9 @@ export default function SwapApp() {
           functionName: 'balanceOf',
           args: [walletAddress]
         })
-        setWalletPoxBalance(parseFloat(formatUnits(poxWalletData.toString(), 18)).toFixed(3))
+        if(typeof poxWalletData === 'bigint') {
+          setWalletPoxBalance(parseFloat(Number(formatUnits(poxWalletData, 18)).toFixed(3)))
+        }
       } catch (error) {
         console.error('Error fetching balances', error)
       }
@@ -57,14 +61,14 @@ export default function SwapApp() {
     fetchBalances()
   })
 
-  const getPayInput = (event) => {
+  const getPayInput = (event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value
     setPayInput(inputValue)
-    const calculatedReceiveInput = showETH ? inputValue * poxBalance / ethBalance : inputValue * ethBalance / poxBalance
-    setReceiveInput(calculatedReceiveInput)
+    const calculatedReceiveInput = showETH ? parseFloat(inputValue) * poxBalance / ethBalance : parseFloat(inputValue) * ethBalance / poxBalance
+    setReceiveInput(calculatedReceiveInput.toString())
  }
 
-  const getReceiveInput = (event) => {
+  const getReceiveInput = (event: ChangeEvent<HTMLInputElement>) => {
     setReceiveInput(event.target.value)
   }
 
@@ -74,12 +78,12 @@ export default function SwapApp() {
 
   const submitSwap = async () => {
     try {
-      if (showETH && parseFloat(payInput) > parseFloat(ethBalance)) {
+      if (showETH && parseFloat(payInput) > ethBalance) {
         alert('Not enough ETH in the pool')
         return
       }
     
-      if (!showETH && parseFloat(payInput) > parseFloat(poxBalance)) {
+      if (!showETH && parseFloat(payInput) > poxBalance) {
         alert('Not enough POX in the pool')
         return
       }
@@ -141,7 +145,7 @@ export default function SwapApp() {
             />
             <div className='flex bg-[#00668c] m-auto py-0.5 px-3 rounded-full'>
               <div style={{ width: '24px', height: '24px', margin: 'auto' }}>
-                <Image src={showETH ? '/eth.png' : '/pox.png'} width={24} height={24} className='rounded-full'/>
+                <Image src={showETH ? '/eth.png' : '/pox.png'} width={24} height={24} className='rounded-full' alt=""/>
               </div>
               <p className='text-[20px] text-[#f5f4f1] pl-1.5 font-semibold'>{showETH ? 'ETH' : 'POX'}</p>
             </div>
@@ -152,7 +156,7 @@ export default function SwapApp() {
         <div className='absolute inset-1/3 flex justify-center items-center'>
           <div className='bg-[#71c4ef] border-4 border-[#00668c] rounded-lg hover:border-[#fe7e01]'>
             <button className='flex justify-center items-center p-1.5' onClick={toggleSwap}>
-              <Image src='/up-down.png' width={24} height={24} className='rounded-full'/>
+              <Image src='/up-down.png' width={24} height={24} className='rounded-full' alt=""/>
             </button>
           </div>
         </div>
@@ -170,7 +174,7 @@ export default function SwapApp() {
             />
             <div className='flex bg-[#00668c] m-auto py-0.5 px-3 rounded-full'>
               <div style={{ width: '24px', height: '24px', margin: 'auto' }}>
-                <Image src={showETH ? '/pox.png' : '/eth.png'} width={24} height={24} className='rounded-full'/>
+                <Image src={showETH ? '/pox.png' : '/eth.png'} width={24} height={24} className='rounded-full' alt=""/>
               </div>
               <p className='text-[20px] text-[#f5f4f1] pl-1.5 font-semibold'>{showETH ? 'POX' : 'ETH'}</p>
             </div>

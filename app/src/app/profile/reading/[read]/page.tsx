@@ -16,7 +16,7 @@ export default function Read({ params }: { params: { read: string } }) {
   const signature = urlParams.get('signature')
   
   useEffect(() => {
-    window.history.pushState({}, null, '/read')
+    window.history.pushState({}, '', '/read')
 
     if (signature) {
       verifySignature()
@@ -28,15 +28,22 @@ export default function Read({ params }: { params: { read: string } }) {
       const account = await getAccount()
       const message = 'I agree to read this book!'
 
-      const valid = await verifyMessage({ 
-        address: account, 
-        message,
-        signature,
-      })
+      if (signature && signature.startsWith('0x')) {
+        const valid = await verifyMessage({
+          address: account,
+          message,
+          signature: signature as `0x${string}` | Uint8Array
+        })
 
-      setIsSignatureValid(valid)
+        setIsSignatureValid(valid)
+      } else {
+        console.error('Invalid or missing signature')
+        setIsSignatureValid(false)
+      }
+
     } catch (error) {
       console.error('Error Verifting Signature!')
+      setIsSignatureValid(false)
     }
   }
 
